@@ -41,7 +41,7 @@ char **alocarMapa(int altura, int largura) {
 void liberarMapa(char **mapa, int altura) {
     int j;
     for (j = 0; j < altura; j++)
-        free(mapa[j]);
+        free(mapa[j]); 
     free(mapa);
 }
 
@@ -162,11 +162,7 @@ void jogar() {
         limparBuffer();
 
         while (!terminou_fase) {
-#ifdef _WIN32
             system("cls");
-#else
-            system("clear");
-#endif
             printf("Fase %d - Pontos: %d\n", n, jog.score);
             imprimirMapa(&fase);
             printf("Use W A S D para se mover: ");
@@ -184,13 +180,7 @@ void jogar() {
     salvarEstatistica(&jog);
     printf("\nJogo finalizado! Pontuação: %d\n", jog.score);
 
-#ifdef _WIN32
     system("pause");
-#else
-    printf("Pressione ENTER para voltar ao menu...\n");
-    limparBuffer();
-    getchar();
-#endif
 }
 
 int main() {

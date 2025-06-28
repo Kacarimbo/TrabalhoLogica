@@ -5,9 +5,8 @@
 
 #define MAX_LINHA 100
 #define MAX_COL 100
-#define MAX_FASES 10
+#define MAX_FASES 5
 #define ARQUIVO_ESTATS "estatisticas.txt"
-#define TAM_PADRAO 11
 
 typedef struct {
     int x, y;
@@ -44,55 +43,6 @@ void liberarMapa(char **mapa, int altura) {
     for (j = 0; j < altura; j++)
         free(mapa[j]);
     free(mapa);
-}
-
-int dx[4] = {0, 0, -1, 1};
-int dy[4] = {-1, 1, 0, 0};
-
-void embaralhar(int *vetor, int n) {
-    int i, j, temp;
-    for (i = 0; i < n; i++) {
-        j = rand() % n;
-        temp = vetor[i];
-        vetor[i] = vetor[j];
-        vetor[j] = temp;
-    }
-}
-
-void dfsLabirinto(char **mapa, int x, int y, int largura, int altura) {
-    mapa[x][y] = ' ';
-    int dirs[4] = {0, 1, 2, 3};
-    embaralhar(dirs, 4);
-    int i, nx, ny;
-    for (i = 0; i < 4; i++) {
-        nx = x + dx[dirs[i]] * 2;
-        ny = y + dy[dirs[i]] * 2;
-        if (nx > 0 && nx < altura && ny > 0 && ny < largura && mapa[nx][ny] == '#') {
-            mapa[x + dx[dirs[i]]][y + dy[dirs[i]]] = ' ';
-            dfsLabirinto(mapa, nx, ny, largura, altura);
-        }
-    }
-}
-
-void gerarFaseAleatoria(Fase *fase) {
-    int i, j;
-    fase->altura = TAM_PADRAO;
-    fase->largura = TAM_PADRAO;
-    fase->mapa = alocarMapa(fase->altura, fase->largura);
-
-    for (i = 0; i < fase->altura; i++)
-        for (j = 0; j < fase->largura; j++)
-            fase->mapa[i][j] = '#';
-
-    dfsLabirinto(fase->mapa, 1, 1, fase->largura, fase->altura);
-
-    fase->mapa[1][1] = '@';
-    fase->jogador.x = 1;
-    fase->jogador.y = 1;
-
-    fase->mapa[fase->altura - 2][fase->largura - 2] = 'E';
-    fase->saida.x = fase->altura - 2;
-    fase->saida.y = fase->largura - 2;
 }
 
 int carregarFase(Fase *fase, const char *nomeArquivo) {
@@ -198,15 +148,9 @@ void jogar() {
         Fase fase;
         int sucesso = 0;
 
-        if (n <= 5) {
-            char nomeFase[20];
-            sprintf(nomeFase, "fase%d.txt", n);
-            sucesso = carregarFase(&fase, nomeFase);
-        } else {
-            printf("Gerando fase aleatória %d...\n", n);
-            gerarFaseAleatoria(&fase);
-            sucesso = 1;
-        }
+        char nomeFase[20];
+        sprintf(nomeFase, "fase%d.txt", n);
+        sucesso = carregarFase(&fase, nomeFase);
 
         if (!sucesso) {
             printf("Erro ao carregar a fase %d\n", n);
